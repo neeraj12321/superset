@@ -14,6 +14,9 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+
+from __future__ import annotations
+
 import re
 from datetime import datetime
 from re import Pattern
@@ -38,6 +41,8 @@ COLUMN_DOES_NOT_EXIST_REGEX = re.compile("no such column: (?P<column_name>.+)")
 class SqliteEngineSpec(BaseEngineSpec):
     engine = "sqlite"
     engine_name = "SQLite"
+
+    disable_ssh_tunneling = True
 
     _time_grain_expressions = {
         None: "{col}",
@@ -121,7 +126,131 @@ class SqliteEngineSpec(BaseEngineSpec):
 
     @classmethod
     def get_table_names(
-        cls, database: "Database", inspector: Inspector, schema: Optional[str]
+        cls, database: Database, inspector: Inspector, schema: Optional[str]
     ) -> set[str]:
         """Need to disregard the schema for Sqlite"""
         return set(inspector.get_table_names())
+
+    @classmethod
+    def get_function_names(
+        cls,
+        database: Database,
+    ) -> list[str]:
+        """
+        Return function names.
+        """
+        return [
+            "abs",
+            "acos",
+            "acosh",
+            "asin",
+            "asinh",
+            "atan",
+            "atan2",
+            "atanh",
+            "avg",
+            "ceil",
+            "ceiling",
+            "changes",
+            "char",
+            "coalesce",
+            "cos",
+            "cosh",
+            "count",
+            "cume_dist",
+            "date",
+            "datetime",
+            "degrees",
+            "dense_rank",
+            "exp",
+            "first_value",
+            "floor",
+            "format",
+            "glob",
+            "group_concat",
+            "hex",
+            "ifnull",
+            "iif",
+            "instr",
+            "json",
+            "json_array",
+            "json_array_length",
+            "json_each",
+            "json_error_position",
+            "json_extract",
+            "json_group_array",
+            "json_group_object",
+            "json_insert",
+            "json_object",
+            "json_patch",
+            "json_quote",
+            "json_remove",
+            "json_replace",
+            "json_set",
+            "json_tree",
+            "json_type",
+            "json_valid",
+            "julianday",
+            "lag",
+            "last_insert_rowid",
+            "last_value",
+            "lead",
+            "length",
+            "like",
+            "likelihood",
+            "likely",
+            "ln",
+            "load_extension",
+            "log",
+            "log10",
+            "log2",
+            "lower",
+            "ltrim",
+            "max",
+            "min",
+            "mod",
+            "nth_value",
+            "ntile",
+            "nullif",
+            "percent_rank",
+            "pi",
+            "pow",
+            "power",
+            "printf",
+            "quote",
+            "radians",
+            "random",
+            "randomblob",
+            "rank",
+            "replace",
+            "round",
+            "row_number",
+            "rtrim",
+            "sign",
+            "sin",
+            "sinh",
+            "soundex",
+            "sqlite_compileoption_get",
+            "sqlite_compileoption_used",
+            "sqlite_offset",
+            "sqlite_source_id",
+            "sqlite_version",
+            "sqrt",
+            "strftime",
+            "substr",
+            "substring",
+            "sum",
+            "tan",
+            "tanh",
+            "time",
+            "total_changes",
+            "trim",
+            "trunc",
+            "typeof",
+            "unhex",
+            "unicode",
+            "unixepoch",
+            "unlikely",
+            "upper",
+            "zeroblob",
+        ]
