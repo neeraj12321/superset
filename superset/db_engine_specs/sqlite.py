@@ -42,8 +42,36 @@ class SqliteEngineSpec(BaseEngineSpec):
     _time_grain_expressions = {
         None: "{col}",
         TimeGrain.SECOND: "DATETIME(STRFTIME('%Y-%m-%dT%H:%M:%S', {col}))",
+        TimeGrain.FIVE_SECONDS: (
+            "DATETIME({col}, printf('-%d seconds', "
+            "CAST(strftime('%S', {col}) AS INT) % 5))"
+        ),
+        TimeGrain.THIRTY_SECONDS: (
+            "DATETIME({col}, printf('-%d seconds', "
+            "CAST(strftime('%S', {col}) AS INT) % 30))"
+        ),
         TimeGrain.MINUTE: "DATETIME(STRFTIME('%Y-%m-%dT%H:%M:00', {col}))",
+        TimeGrain.FIVE_MINUTES: (
+            "DATETIME(STRFTIME('%Y-%m-%dT%H:%M:00', {col}), printf('-%d minutes', "
+            "CAST(strftime('%M', {col}) AS INT) % 5))"
+        ),
+        TimeGrain.TEN_MINUTES: (
+            "DATETIME(STRFTIME('%Y-%m-%dT%H:%M:00', {col}), printf('-%d minutes', "
+            "CAST(strftime('%M', {col}) AS INT) % 10))"
+        ),
+        TimeGrain.FIFTEEN_MINUTES: (
+            "DATETIME(STRFTIME('%Y-%m-%dT%H:%M:00', {col}), printf('-%d minutes', "
+            "CAST(strftime('%M', {col}) AS INT) % 15))"
+        ),
+        TimeGrain.THIRTY_MINUTES: (
+            "DATETIME(STRFTIME('%Y-%m-%dT%H:%M:00', {col}), printf('-%d minutes', "
+            "CAST(strftime('%M', {col}) AS INT) % 30))"
+        ),
         TimeGrain.HOUR: "DATETIME(STRFTIME('%Y-%m-%dT%H:00:00', {col}))",
+        TimeGrain.SIX_HOURS: (
+            "DATETIME(STRFTIME('%Y-%m-%dT%H:00:00', {col}), printf('-%d hours', "
+            "CAST(strftime('%H', {col}) AS INT) % 6))"
+        ),
         TimeGrain.DAY: "DATETIME({col}, 'start of day')",
         TimeGrain.WEEK: "DATETIME({col}, 'start of day', \
             -strftime('%w', {col}) || ' days')",
@@ -62,6 +90,13 @@ class SqliteEngineSpec(BaseEngineSpec):
             "DATETIME({col}, 'start of day', 'weekday 1', '-7 days')"
         ),
     }
+    # not sure why these are differnet
+    _time_grain_expressions.update(
+        {
+            TimeGrain.HALF_HOUR: _time_grain_expressions[TimeGrain.THIRTY_MINUTES],
+            TimeGrain.QUARTER_YEAR: _time_grain_expressions[TimeGrain.QUARTER],
+        }
+    )
 
     custom_errors: dict[Pattern[str], tuple[str, SupersetErrorType, dict[str, Any]]] = {
         COLUMN_DOES_NOT_EXIST_REGEX: (
